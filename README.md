@@ -1,5 +1,9 @@
 用qwidget做的软键盘
 
+目前  仅支持**QLineEdit**  **QPlainTextEdit**
+
+只需要移植FullKeyboard.h  FullKeyboard.cpp han_character_frequency.db  三个文件即可
+
 能拼音输入
 
 可在嵌入式(arm)上运行
