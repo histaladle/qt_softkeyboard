@@ -56,7 +56,7 @@ void FullKeyboard::initKeyboard()
     glayout->addWidget(spellLabel,0,0);
 
     btn=new QPushButton("<",this);
-    btn->setFixedWidth(20);
+    btn->setFixedWidth(40);
     btn->setFixedHeight(wah);
     btn->setSizePolicy(QSizePolicy::Maximum,QSizePolicy::Maximum);
     leftWordAreaBtn=btn;
@@ -85,7 +85,7 @@ void FullKeyboard::initKeyboard()
              << w->layout() << wordContentLayout;
 
     btn=new QPushButton(">",this);
-    btn->setFixedWidth(20);
+    btn->setFixedWidth(40);
     btn->setFixedHeight(wah);
     btn->setSizePolicy(QSizePolicy::Maximum,QSizePolicy::Maximum);
     rightWordAreaBtn=btn;
