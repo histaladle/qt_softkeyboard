@@ -207,7 +207,7 @@ void FullKeyboard::onKeyReleased(int page, int line, int index)
             if(QString(atUi->metaObject()->className())=="QPlainTextEdit")
             {
                 QPlainTextEdit *atTextEdit=static_cast<QPlainTextEdit*>(atUi);
-                atTextEdit->setPlainText(lineEdit->text());
+                atTextEdit->setPlainText(plainTextEdit->toPlainText());
             }
             else if(QString(atUi->metaObject()->className())=="QLineEdit")
             {
@@ -308,16 +308,16 @@ void FullKeyboard::attach(QWidget *w)
         }
         lineEdit->setText(edit->text());
         lineEdit->setValidator(v);
-        lineEdit->show();
-        plainTextEdit->hide();
+        lineEdit->setVisible(true);
+        plainTextEdit->setVisible(false);
         setFixedHeight(250);
     }
     else if(QString(atUi->metaObject()->className())=="QPlainTextEdit")
     {
         QPlainTextEdit *textEdit=static_cast<QPlainTextEdit*>(atUi);
         this->plainTextEdit->setPlainText(textEdit->toPlainText());
-        lineEdit->hide();
-        textEdit->show();
+        lineEdit->setVisible(false);
+        plainTextEdit->setVisible(true);
         setFixedHeight(350);
     }
 }
@@ -373,7 +373,6 @@ void FullKeyboard::insertKeyValue(int page, int line, int index)
             }
             if(spellLegal) {
                 ss=pin(spell);
-                qDebug() << "debug29" << ss.size();
                 updateWordArea(ss);
             }
             else {
@@ -421,7 +420,6 @@ void FullKeyboard::insertKeyValue(int page, int line, int index)
     }
     else if(plainTextEdit->isVisible()) {
         if(keyboardStack->currentIndex()==1) {
-            QPushButton *btn=nullptr;
             QString spell;
             QStringList ss;
             spell=spellLabel->text();
@@ -455,18 +453,7 @@ void FullKeyboard::insertKeyValue(int page, int line, int index)
             }
             if(spellLegal) {
                 ss=pin(spell);
-                clearWordArea();
-                for(int i=0;i<ss.size();i++) {
-                    btn=new QPushButton(ss[i],this);
-                    connect(btn,&QPushButton::pressed,this,[this,btn](){
-                        QKeyEvent *keyev=nullptr;
-                        keyev=new QKeyEvent(QEvent::KeyPress,0,Qt::NoModifier,btn->text());
-                        QApplication::postEvent(plainTextEdit,keyev);
-                        keyev=new QKeyEvent(QEvent::KeyRelease,0,Qt::NoModifier,btn->text());
-                        QApplication::postEvent(plainTextEdit,keyev);
-                    });
-                    wordBtns.append(btn);
-                }
+                updateWordArea(ss);
             }
             else {
                 clearWordArea();
@@ -475,9 +462,9 @@ void FullKeyboard::insertKeyValue(int page, int line, int index)
         else {
             if(keyboardStatus==Lowered)
             {
-                ke=new QKeyEvent(QEvent::KeyPress,0,Qt::NoModifier,keyboardPages[page][line][index].shiftedText);
+                ke=new QKeyEvent(QEvent::KeyPress,0,Qt::NoModifier,keyboardPages[page][line][index].text);
                 QApplication::postEvent(plainTextEdit,ke);
-                ke=new QKeyEvent(QEvent::KeyRelease,0,Qt::NoModifier,keyboardPages[page][line][index].shiftedText);
+                ke=new QKeyEvent(QEvent::KeyRelease,0,Qt::NoModifier,keyboardPages[page][line][index].text);
                 QApplication::postEvent(plainTextEdit,ke);
             }
             else if(keyboardStatus==Shifted)
@@ -638,47 +625,6 @@ void FullKeyboard::initKeyboardPages()
     this->keyboardPages=keyboardPages;
 }
 
-bool FullKeyboard::eventFilter(QObject *watched, QEvent *event)
-{
-    int sx,sy;
-    QRect rc;
-    if(parentWidget()) {
-        rc=parentWidget()->geometry();
-    }
-    else {
-        QDesktopWidget* desktopWidget = QApplication::desktop();
-        rc=desktopWidget->availableGeometry();
-    }
-    if(event->type()==QEvent::MouseButtonRelease) {
-        for(int i=0;i<targets.size();i++) {
-            if(watched==targets[i]) {
-                attach(static_cast<QWidget*>(watched));
-                show();
-                sx=rc.center().x()-size().width()/2;
-                sy=rc.center().y()-size().height()/2;
-                setGeometry(sx,sy,width(),height());
-            }
-        }
-    }
-    return false;
-}
-
-bool FullKeyboard::install(QWidget *w)
-{
-    if(w) {
-        targets.append(w);
-        w->installEventFilter(this);
-        return true;
-    }
-    return false;
-}
-
-void FullKeyboard::uninstall(QWidget *w)
-{
-    w->removeEventFilter(this);
-    targets.removeAll(w);
-}
-
 void FullKeyboard::setWordBarVisible(bool f)
 {
     spellLabel->setVisible(f);
@@ -762,4 +708,21 @@ void FullKeyboard::updateWordArea(QStringList words)
         wordContentLayout->addWidget(btn, 0, i);
         wordBtns.append(btn);
     }
+}
+
+void FullKeyboard::showEvent(QShowEvent *event)
+{
+    Q_UNUSED(event);
+    int sx,sy;
+    QRect rc;
+    if(parentWidget()) {
+        rc=parentWidget()->geometry();
+    }
+    else {
+        QDesktopWidget* desktopWidget = QApplication::desktop();
+        rc=desktopWidget->availableGeometry();
+    }
+    sx=rc.center().x()-size().width()/2;
+    sy=rc.center().y()-size().height()/2;
+    setGeometry(sx,sy,width(),height());
 }

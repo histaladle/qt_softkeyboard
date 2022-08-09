@@ -62,12 +62,13 @@ signals:
 
 public slots:
     void onKeyReleased(int page,int line,int index);
+    void showEvent(QShowEvent *event);
 public:
     bool install(QWidget *w);
     void uninstall(QWidget *w);
 protected:
-    QList<QWidget*> targets;
-    bool eventFilter(QObject *watched, QEvent *event);
+//    QList<QWidget*> targets;
+//    bool eventFilter(QObject *watched, QEvent *event);
 };
 
 #endif // FULLKEYBOARD_H

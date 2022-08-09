@@ -19,7 +19,9 @@
 #include <QtWidgets/QMainWindow>
 #include <QtWidgets/QMenuBar>
 #include <QtWidgets/QPlainTextEdit>
+#include <QtWidgets/QPushButton>
 #include <QtWidgets/QStatusBar>
+#include <QtWidgets/QTextEdit>
 #include <QtWidgets/QToolBar>
 #include <QtWidgets/QWidget>
 
@@ -33,6 +35,8 @@ public:
     QWidget *widget;
     QGridLayout *gridLayout_widget;
     QPlainTextEdit *plainTextEdit;
+    QTextEdit *textEdit;
+    QPushButton *pushButton_edit;
     QMenuBar *menuBar;
     QToolBar *mainToolBar;
     QStatusBar *statusBar;
@@ -57,6 +61,12 @@ public:
         plainTextEdit = new QPlainTextEdit(centralWidget);
         plainTextEdit->setObjectName(QStringLiteral("plainTextEdit"));
         plainTextEdit->setGeometry(QRect(250, 20, 161, 91));
+        textEdit = new QTextEdit(centralWidget);
+        textEdit->setObjectName(QStringLiteral("textEdit"));
+        textEdit->setGeometry(QRect(40, 60, 104, 71));
+        pushButton_edit = new QPushButton(centralWidget);
+        pushButton_edit->setObjectName(QStringLiteral("pushButton_edit"));
+        pushButton_edit->setGeometry(QRect(250, 120, 75, 23));
         MainWindow->setCentralWidget(centralWidget);
         menuBar = new QMenuBar(MainWindow);
         menuBar->setObjectName(QStringLiteral("menuBar"));
@@ -77,6 +87,7 @@ public:
     void retranslateUi(QMainWindow *MainWindow)
     {
         MainWindow->setWindowTitle(QApplication::translate("MainWindow", "MainWindow", 0));
+        pushButton_edit->setText(QApplication::translate("MainWindow", "edit", 0));
     } // retranslateUi
 
 };

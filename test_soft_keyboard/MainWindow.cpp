@@ -11,8 +11,6 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-    fullKeyboard->install(ui->lineEdit);
-
     QPushButton *btn=nullptr;
     QWidget *w=nullptr;
     QGridLayout *glayout=nullptr;
@@ -20,8 +18,7 @@ MainWindow::MainWindow(QWidget *parent) :
     scrarea=new QScrollArea(this);
     ui->gridLayout_widget->addWidget(scrarea);
     qDebug() << "debug27" <<scrarea->widget();
-
-
+    ui->lineEdit->installEventFilter(this);
     w=new QWidget(this);
     glayout=new QGridLayout(w);
 //    w->setFixedSize(400,200);
@@ -47,10 +44,25 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(btn,&QPushButton::released,this,[scrarea](){
         scrarea->horizontalScrollBar()->setValue(scrarea->horizontalScrollBar()->value()+scrarea->horizontalScrollBar()->maximum()/10);
     });
+    connect(ui->pushButton_edit,&QPushButton::released,this,[this](){
+        fullKeyboard->attach(ui->plainTextEdit);
+        fullKeyboard->show();
+    });
     QChar c('1');
     qDebug() << "debug26" << c.isLower();
 //    HanCharacter hanch;
 //    hanch.initDb();
+}
+
+bool MainWindow::eventFilter(QObject *watched, QEvent *event)
+{
+    if(event->type()==QEvent::MouseButtonRelease) {
+        if(watched==ui->lineEdit) {
+            fullKeyboard->attach(ui->lineEdit);
+            fullKeyboard->show();
+        }
+    }
+    return false;
 }
 
 MainWindow::~MainWindow()

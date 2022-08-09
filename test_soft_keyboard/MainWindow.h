@@ -16,6 +16,8 @@ public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
     FullKeyboard *fullKeyboard;
+protected:
+    bool eventFilter(QObject *watched, QEvent *event);
 private:
     Ui::MainWindow *ui;
 };
