@@ -11,15 +11,13 @@ public:
                             Qt::WindowFlags f=Qt::Dialog);
 
     void attach(QWidget *w);
-    bool install(QWidget *w);
-    void uninstall(QWidget *w);
 private:
     QWidget *atUi=nullptr;
     QLineEdit *inputEdit=nullptr;
     void initKeyboard();
     QList<QWidget*> targets;
 protected:
-    bool eventFilter(QObject *watched, QEvent *event);
+    void showEvent(QShowEvent *event);
 signals:
 
 private slots:

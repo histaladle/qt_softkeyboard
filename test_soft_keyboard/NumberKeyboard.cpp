@@ -411,8 +411,9 @@ void NumberKeyboard::onOkReleased()
     }
 }
 
-bool NumberKeyboard::eventFilter(QObject *watched, QEvent *event)
+void NumberKeyboard::showEvent(QShowEvent *event)
 {
+    Q_UNUSED(event);
     int sx,sy;
     QRect rc;
     if(parentWidget()) {
@@ -422,32 +423,7 @@ bool NumberKeyboard::eventFilter(QObject *watched, QEvent *event)
         QDesktopWidget* desktopWidget = QApplication::desktop();
         rc=desktopWidget->availableGeometry();
     }
-    if(event->type()==QEvent::MouseButtonRelease) {
-        for(int i=0;i<targets.size();i++) {
-            if(watched==targets[i]) {
-                attach(static_cast<QWidget*>(watched));
-                show();
-                sx=rc.center().x()-size().width()/2;
-                sy=rc.center().y()-size().height()/2;
-                setGeometry(sx,sy,width(),height());
-            }
-        }
-    }
-    return false;
-}
-
-bool NumberKeyboard::install(QWidget *w)
-{
-    if(w) {
-        targets.append(w);
-        w->installEventFilter(this);
-        return true;
-    }
-    return false;
-}
-
-void NumberKeyboard::uninstall(QWidget *w)
-{
-    w->removeEventFilter(this);
-    targets.removeAll(w);
+    sx=rc.center().x()-size().width()/2;
+    sy=rc.center().y()-size().height()/2;
+    setGeometry(sx,sy,width(),height());
 }
