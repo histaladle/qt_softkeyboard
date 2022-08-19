@@ -32,29 +32,35 @@ void HanCharacter::initDb()
     qDebug() << "debug93" << ok;
     if(!ok) return;
     int l=0;
-    QString pinyin,trans;
+    QString trans,s;
+    QStringList pinyins;
     while(!file.atEnd()) {
         ba=file.readLine();
         line=QString::fromUtf8(ba);
         line=line.trimmed();
         ss=line.split('\t');
         qDebug() << "debug98-9" << l << line << ss.size();
-        pinyin.clear();
+        s.clear();
         if(ss.size()>4) {
-            pinyin=ss[4];
-            for(int n=0;n<pinyin.size();n++) {
-                if(!pinyin[n].isLetter()) {
-                    pinyin.remove(n,1);
+            s=ss[4];
+            for(int n=0;n<s.size();n++) {
+                if(!s[n].isLetter() && s[n]!='/') {
+                    s.remove(n,1);
+                    n--;
                 }
             }
-            pinyin.toLower();
+            s.toLower();
+            pinyins=s.split('/');
         }
         trans.clear();
         if(ss.size()>5) {
             trans=ss[5];
         }
-        ok=query.exec(QString("insert into character_frequency values(%1,\'%2\',%3,%4,\'%5\',\'%6\')").arg(ss[0]).arg(ss[1]).arg(ss[2]).arg(ss[3]).arg(pinyin).arg(trans));
-        qDebug() << "debug54" << l << ok;
+        for(int i=0;i<pinyins.size();i++) {
+            s=pinyins[i];
+            ok=query.exec(QString("insert into character_frequency values(%1,\'%2\',%3,%4,\'%5\',\'%6\')").arg(ss[0]).arg(ss[1]).arg(ss[2]).arg(ss[3]).arg(s).arg(trans));
+            qDebug() << "debug54" << l << ok << s;
+        }
         l++;
     }
     db.close();
