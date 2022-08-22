@@ -314,6 +314,7 @@ void FullKeyboard::attach(QWidget *w)
         lineEdit->setText(edit->text());
         lineEdit->setValidator(v);
         lineEdit->setVisible(true);
+        lineEdit->setEchoMode(edit->echoMode());
         plainTextEdit->setVisible(false);
         setFixedHeight(250);
     }
