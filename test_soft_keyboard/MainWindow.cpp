@@ -52,6 +52,9 @@ MainWindow::MainWindow(QWidget *parent) :
     qDebug() << "debug26" << c.isLower();
 //    HanCharacter hanch;
 //    hanch.initDb();
+    QValidator *valid=nullptr;
+    valid=new QRegExpValidator(QRegExp("^\\w+$"));
+    //ui->lineEdit->setValidator(valid);
 }
 
 bool MainWindow::eventFilter(QObject *watched, QEvent *event)

@@ -218,6 +218,8 @@ void FullKeyboard::onKeyReleased(int page, int line, int index)
                 QLineEdit *atLineEdit=static_cast<QLineEdit*>(atUi);
                 if(atLineEdit->validator())
                 {
+                    n=0;
+                    s=lineEdit->text();
                     if(atLineEdit->validator()->validate(s,n)==QValidator::Acceptable)
                     {
                         atLineEdit->setText(lineEdit->text());
@@ -357,6 +359,7 @@ void FullKeyboard::insertKeyValue(int page, int line, int index)
                     s2=lineEdit->text();
                     if(lineEdit->validator())
                     {
+                        n=0;
                         if(lineEdit->validator()->validate(s2,n)!=QValidator::Acceptable)
                         {
                             lineEdit->setText(s1);
@@ -395,6 +398,7 @@ void FullKeyboard::insertKeyValue(int page, int line, int index)
                 s2=lineEdit->text();
                 if(lineEdit->validator())
                 {
+                    n=0;
                     if(lineEdit->validator()->validate(s2,n)!=QValidator::Acceptable)
                     {
                         lineEdit->setText(s1);
@@ -413,6 +417,7 @@ void FullKeyboard::insertKeyValue(int page, int line, int index)
                 s2=lineEdit->text();
                 if(lineEdit->validator())
                 {
+                    n=0;
                     if(lineEdit->validator()->validate(s2,n)!=QValidator::Acceptable)
                     {
                         lineEdit->setText(s1);
@@ -550,7 +555,7 @@ void FullKeyboard::initKeyboardPages()
                 {          ",",      ",",          "<",      "<"},
                 {          ".",      ".",          ">",      ">"},
                 {          "/",      "/",          "?",      "?"},
-                {         "EN",       "",         "EN",       ""},
+                {      "EN-US",       "",      "EN-US",       ""},
                 {         "Ok",       "",         "Ok",       ""},
             },
         },
@@ -620,7 +625,7 @@ void FullKeyboard::initKeyboardPages()
                 {          ",",      ",",          "<",      "<"},
                 {          ".",      ".",          ">",      ">"},
                 {          "/",      "/",          "?",      "?"},
-                {        "ZHS",       "",        "ZHS",       ""},
+                {       "ZH-S",       "",       "ZH-S",       ""},
                 {         "Ok",       "",         "Ok",       ""},
             },
         },
@@ -692,6 +697,7 @@ void FullKeyboard::updateWordArea(QStringList words)
                 delete ke;
                 s2=lineEdit->text();
                 if(lineEdit->validator()) {
+                    n=0;
                     if(lineEdit->validator()->validate(s2,n)!=QValidator::Acceptable) {
                         lineEdit->setText(s1);
                     }
