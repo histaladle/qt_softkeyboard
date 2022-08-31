@@ -30,7 +30,7 @@ public:
 
     explicit FullKeyboard(QWidget *parent=0, Qt::WindowFlags f=Qt::Window);
     void attach(QWidget *w);
-    void setPinyinEnable(bool f);
+    void setChineseEnabled(bool f);
 private:
     QWidget *atUi=nullptr;
     QLineEdit *lineEdit=nullptr;
@@ -59,7 +59,7 @@ private:
     void updateWordArea(QStringList words);
     void insertKeyValue(int page, int line, int index);
     QSqlDatabase pinyinDb;
-    bool pinyinEnabled;
+    bool chineseEnabled;
 signals:
 
 public slots:

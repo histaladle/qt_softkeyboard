@@ -25,7 +25,7 @@ FullKeyboard::FullKeyboard(QWidget *parent, Qt::WindowFlags f)
         updateKeyboard(i, keyboardStatus);
     }
     setWordBarVisible(false);
-    pinyinEnabled=true;
+    chineseEnabled=true;
 }
 
 void FullKeyboard::initKeyboard()
@@ -193,7 +193,7 @@ void FullKeyboard::onKeyReleased(int page, int line, int index)
     {
         if(page==0)
         {
-            if(pinyinEnabled) {
+            if(chineseEnabled) {
                 keyboardStack->setCurrentIndex(1);
             }
         }
@@ -720,9 +720,9 @@ void FullKeyboard::updateWordArea(QStringList words)
     }
 }
 
-void FullKeyboard::setPinyinEnable(bool f)
+void FullKeyboard::setChineseEnabled(bool f)
 {
-    pinyinEnabled=f;
+    chineseEnabled=f;
 }
 
 void FullKeyboard::showEvent(QShowEvent *event)
