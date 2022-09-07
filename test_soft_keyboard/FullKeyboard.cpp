@@ -556,7 +556,7 @@ void FullKeyboard::initKeyboardPages()
                 {          ",",      ",",          "<",      "<"},
                 {          ".",      ".",          ">",      ">"},
                 {          "/",      "/",          "?",      "?"},
-                {      "EN-US",       "",      "EN-US",       ""},
+                {      "en_US",       "",      "en_US",       ""},
                 {         "Ok",       "",         "Ok",       ""},
             },
         },
@@ -626,7 +626,7 @@ void FullKeyboard::initKeyboardPages()
                 {          ",",      ",",          "<",      "<"},
                 {          ".",      ".",          ">",      ">"},
                 {          "/",      "/",          "?",      "?"},
-                {       "ZH-S",       "",       "ZH-S",       ""},
+                {      "zh_CN",       "",      "zh_CN",       ""},
                 {         "Ok",       "",         "Ok",       ""},
             },
         },
@@ -653,14 +653,14 @@ QStringList FullKeyboard::pin(QString pinyin)
 //        s=pinyin+QString::number(i);
 //        ss.append(s);
 //    }
-    if(!pinyinDb.isOpen()) {
-        pinyinDb=QSqlDatabase::addDatabase("QSQLITE","fullkeyboard");
-        pinyinDb.setDatabaseName(QApplication::applicationDirPath()+"/han_character_frequency.db");
-        if(!pinyinDb.open()) {
+    if(!chineseDb.isOpen()) {
+        chineseDb=QSqlDatabase::addDatabase("QSQLITE","fullkeyboard");
+        chineseDb.setDatabaseName(QApplication::applicationDirPath()+"/han_character_frequency.db");
+        if(!chineseDb.open()) {
             return ss;
         }
     }
-    QSqlQuery query(pinyinDb);
+    QSqlQuery query(chineseDb);
     query.exec(QString("select karacter from character_frequency where pinyin=\'%1\';").arg(pinyin));
     while(query.next()) {
         ss.append(query.value(0).toString());

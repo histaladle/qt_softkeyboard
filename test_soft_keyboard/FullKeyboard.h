@@ -58,7 +58,7 @@ private:
     void clearWordArea();
     void updateWordArea(QStringList words);
     void insertKeyValue(int page, int line, int index);
-    QSqlDatabase pinyinDb;
+    QSqlDatabase chineseDb;
     bool chineseEnabled;
 signals:
 
