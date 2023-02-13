@@ -25,7 +25,8 @@ FullKeyboard::FullKeyboard(QWidget *parent, Qt::WindowFlags f)
         updateKeyboard(i, keyboardStatus);
     }
     setWordBarVisible(false);
-    chineseEnabled=true;
+    langFLags[0]=1;
+    langFLags[1]=1;
 }
 
 void FullKeyboard::initKeyboard()
@@ -71,6 +72,7 @@ void FullKeyboard::initKeyboard()
 
     wordArea=new QScrollArea(this);
     wordArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    wordArea->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     wordArea->setFixedHeight(wah);
     wordArea->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Maximum);
     glayout->addWidget(wordArea,0,2);
@@ -116,7 +118,7 @@ void FullKeyboard::initKeyboard()
         kvlayout=new QVBoxLayout(kbwidget);
         kvlayout->setMargin(0);
         kvlayout->setSpacing(0);
-        for(int line=0;line<4;line++) {
+        for(int line=0;line<keyboardPages[page].size();line++) {
             khlayout=new QHBoxLayout();
             khlayout->setMargin(3);
             khlayout->setSpacing(3);
@@ -193,7 +195,7 @@ void FullKeyboard::onKeyReleased(int page, int line, int index)
     {
         if(page==0)
         {
-            if(chineseEnabled) {
+            if(langFLags[1]) {
                 keyboardStack->setCurrentIndex(1);
             }
         }
@@ -720,9 +722,14 @@ void FullKeyboard::updateWordArea(QStringList words)
     }
 }
 
-void FullKeyboard::setChineseEnabled(bool f)
+void FullKeyboard::setLanguageEnabled(int page,bool f)
 {
-    chineseEnabled=f;
+    if(f) {
+        langFLags[page]=1;
+    }
+    else {
+        langFLags[page]=0;
+    }
 }
 
 void FullKeyboard::showEvent(QShowEvent *event)

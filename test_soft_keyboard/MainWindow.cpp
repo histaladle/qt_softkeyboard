@@ -48,6 +48,7 @@ MainWindow::MainWindow(QWidget *parent) :
         fullKeyboard->attach(ui->plainTextEdit);
         fullKeyboard->show();
     });
+    fullKeyboard->setLanguageEnabled(1,0);
     QChar c('1');
     qDebug() << "debug26" << c.isLower();
 //    HanCharacter hanch;

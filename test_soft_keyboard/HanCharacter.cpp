@@ -49,7 +49,7 @@ void HanCharacter::initDb()
                     n--;
                 }
             }
-            s.toLower();
+            s=s.toLower();
             pinyins=s.split('/');
         }
         trans.clear();

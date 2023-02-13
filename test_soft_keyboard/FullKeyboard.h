@@ -11,6 +11,7 @@
 #include <QGridLayout>
 #include <QSqlDatabase>
 #include <QSqlQuery>
+#include <QMap>
 class KeyButtonInfo {
 public:
     QString label;
@@ -28,9 +29,9 @@ public:
         Shifted,
     };
 
-    explicit FullKeyboard(QWidget *parent=0, Qt::WindowFlags f=Qt::Window);
+    explicit FullKeyboard(QWidget *parent=nullptr, Qt::WindowFlags f=Qt::Window);
     void attach(QWidget *w);
-    void setChineseEnabled(bool f);
+    void setLanguageEnabled(int page,bool enabled);
 private:
     QWidget *atUi=nullptr;
     QLineEdit *lineEdit=nullptr;
@@ -59,7 +60,7 @@ private:
     void updateWordArea(QStringList words);
     void insertKeyValue(int page, int line, int index);
     QSqlDatabase chineseDb;
-    bool chineseEnabled;
+    int langFLags[2];
 signals:
 
 public slots:
