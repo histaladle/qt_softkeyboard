@@ -60,11 +60,11 @@ private:
     void updateWordArea(QStringList words);
     void insertKeyValue(int page, int line, int index);
     QSqlDatabase chineseDb;
-    int langFLags[2];
+    int langFlags[2];
 signals:
 
 public slots:
-    void onKeyReleased(int page,int line,int index);
+    void onKeyPressed(int page,int line,int index);
     void showEvent(QShowEvent *event);
 public:
 protected:

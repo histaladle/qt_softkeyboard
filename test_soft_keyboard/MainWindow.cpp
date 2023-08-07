@@ -5,9 +5,11 @@
 #include <QDebug>
 #include <QPushButton>
 #include <QScrollBar>
+#include <QRegExpValidator>
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     fullKeyboard(new FullKeyboard(this)),
+    numKeyboard(new NumberKeyboard(this)),
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
@@ -19,6 +21,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->gridLayout_widget->addWidget(scrarea);
     qDebug() << "debug27" <<scrarea->widget();
     ui->lineEdit->installEventFilter(this);
+    ui->numLineEdit->installEventFilter(this);
     w=new QWidget(this);
     glayout=new QGridLayout(w);
 //    w->setFixedSize(400,200);
@@ -47,6 +50,8 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->pushButton_edit,&QPushButton::released,this,[this](){
         fullKeyboard->attach(ui->plainTextEdit);
         fullKeyboard->show();
+//        numKeyboard->attach(ui->plainTextEdit);
+//        numKeyboard->show();
     });
 //    fullKeyboard->setLanguageEnabled(1,false);
     QChar c('1');
@@ -56,6 +61,11 @@ MainWindow::MainWindow(QWidget *parent) :
     QValidator *valid=nullptr;
     valid=new QRegExpValidator(QRegExp("^\\w+$"));
     //ui->lineEdit->setValidator(valid);
+    connect(ui->pushButton,&QPushButton::released,this,[this](){
+        qDebug() << "debug37" << ui->textEdit_2->geometry();
+        qDebug() << "debug88" << ui->scrollAreaWidgetContents->mapTo(this,ui->textEdit_2->geometry().topLeft());
+    });
+    installEventFilter(this);
 }
 
 bool MainWindow::eventFilter(QObject *watched, QEvent *event)
@@ -64,6 +74,14 @@ bool MainWindow::eventFilter(QObject *watched, QEvent *event)
         if(watched==ui->lineEdit) {
             fullKeyboard->attach(ui->lineEdit);
             fullKeyboard->show();
+        }
+        else if(watched==this) {
+            QMouseEvent *mse=static_cast<QMouseEvent*>(event);
+            qDebug() << mse->pos();
+        }
+        else if(watched==ui->numLineEdit) {
+            numKeyboard->attach(ui->numLineEdit);
+            numKeyboard->show();
         }
     }
     return false;

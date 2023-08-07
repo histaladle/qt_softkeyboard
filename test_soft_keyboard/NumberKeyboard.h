@@ -7,7 +7,7 @@ class NumberKeyboard : public QFrame
 {
     Q_OBJECT
 public:
-    explicit NumberKeyboard(QWidget *parent = 0,
+    explicit NumberKeyboard(QWidget *parent = nullptr,
                             Qt::WindowFlags f=Qt::Dialog);
 
     void attach(QWidget *w);

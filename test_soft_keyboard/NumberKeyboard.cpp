@@ -1,4 +1,4 @@
-#include "numberkeyboard.h"
+#include "NumberKeyboard.h"
 #include <QGridLayout>
 #include <QPushButton>
 #include <QLineEdit>
@@ -384,6 +384,9 @@ void NumberKeyboard::attach(QWidget *w)
         inputEdit->setText(edit->text());
         inputEdit->setValidator(v);
     }
+    else {
+        atUi=nullptr;
+    }
 }
 
 void NumberKeyboard::onOkReleased()
@@ -413,9 +416,9 @@ void NumberKeyboard::onOkReleased()
 
 void NumberKeyboard::showEvent(QShowEvent *event)
 {
-    Q_UNUSED(event);
     int sx,sy;
     QRect rc;
+    Q_UNUSED(event);
     if(parentWidget()) {
         rc=parentWidget()->geometry();
     }

@@ -25,8 +25,8 @@ FullKeyboard::FullKeyboard(QWidget *parent, Qt::WindowFlags f)
         updateKeyboard(i, keyboardStatus);
     }
     setWordBarVisible(false);
-    langFLags[0]=1;
-    langFLags[1]=1;
+    langFlags[0]=1;
+    langFlags[1]=1;
 }
 
 void FullKeyboard::initKeyboard()
@@ -129,8 +129,8 @@ void FullKeyboard::initKeyboard()
                 btn->setFocusPolicy(Qt::NoFocus);
                 btn->setMinimumSize(minKeyWidth,minKeyHeight);
                 btn->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding);
-                connect(btn,&QPushButton::released,this,[this,page,line,n]{
-                    onKeyReleased(page,line,n);
+                connect(btn,&QPushButton::pressed,this,[this,page,line,n]{
+                    onKeyPressed(page,line,n);
                 });
                 khlayout->addWidget(btn);
                 btnLine.append(btn);
@@ -179,7 +179,166 @@ void FullKeyboard::updateKeyboard(int page, int status)
     }
 }
 
-void FullKeyboard::onKeyReleased(int page, int line, int index)
+void FullKeyboard::insertKeyValue(int page, int line, int index)
+{
+    int n=0;
+    QString s1,s2;
+    QKeyEvent *ke=nullptr;
+    if(lineEdit->isVisible()) {
+        if(keyboardStack->currentIndex()==1) {
+            QString spell;
+            QStringList ss;
+            spell=spellLabel->text();
+            if(keyboardStatus==Lowered) {
+                spell.append(keyboardPages[page][line][index].text);
+            }
+            else if(keyboardStatus==Shifted){
+                spell.append(keyboardPages[page][line][index].shiftedText);
+            }
+            if(spell==spellLabel->text()) {
+                return;
+            }
+            spellLabel->setText(spell);
+//            for(int i=0;i<spell.size();i++) {
+//                if(spell[i]==0x0a || spell[i]==0x0d) {
+//                    s1=lineEdit->text();
+//                    ke=new QKeyEvent(QEvent::KeyPress,0,Qt::NoModifier,spell.mid(0,i));
+//                    QApplication::sendEvent(lineEdit,ke);
+//                    delete ke;
+//                    ke=new QKeyEvent(QEvent::KeyRelease,0,Qt::NoModifier,spell.mid(0,i));
+//                    QApplication::sendEvent(lineEdit,ke);
+//                    delete ke;
+//                    s2=lineEdit->text();
+//                    if(lineEdit->validator())
+//                    {
+//                        n=0;
+//                        if(lineEdit->validator()->validate(s2,n)!=QValidator::Acceptable)
+//                        {
+//                            lineEdit->setText(s1);
+//                        }
+//                    }
+//                    clearWordArea();
+//                    spellLabel->clear();
+//                    return;
+//                }
+//            }
+            bool spellLegal=true;
+            for(int i=0;i<spell.size();i++) {
+                if(!spell[i].isLower()) {
+                    spellLegal=false;
+                    break;
+                }
+            }
+            if(spellLegal) {
+                ss=pin(spell);
+                updateWordArea(ss);
+            }
+            else {
+                clearWordArea();
+            }
+        }
+        else if(keyboardStack->currentIndex()==0) {
+            if(keyboardStatus==Lowered)
+            {
+                s1=lineEdit->text();
+                ke=new QKeyEvent(QEvent::KeyPress,0,Qt::NoModifier,keyboardPages[page][line][index].text);
+                QApplication::sendEvent(lineEdit,ke);
+                delete ke;
+                ke=new QKeyEvent(QEvent::KeyRelease,0,Qt::NoModifier,keyboardPages[page][line][index].text);
+                QApplication::sendEvent(lineEdit,ke);
+                delete ke;
+                s2=lineEdit->text();
+                if(lineEdit->validator())
+                {
+                    n=0;
+                    if(lineEdit->validator()->validate(s2,n)!=QValidator::Acceptable)
+                    {
+                        lineEdit->setText(s1);
+                    }
+                }
+            }
+            else if(keyboardStatus==Shifted)
+            {
+                s1=lineEdit->text();
+                ke=new QKeyEvent(QEvent::KeyPress,0,Qt::NoModifier,keyboardPages[page][line][index].shiftedText);
+                QApplication::sendEvent(lineEdit,ke);
+                delete ke;
+                ke=new QKeyEvent(QEvent::KeyRelease,0,Qt::NoModifier,keyboardPages[page][line][index].shiftedText);
+                QApplication::sendEvent(lineEdit,ke);
+                delete ke;
+                s2=lineEdit->text();
+                if(lineEdit->validator())
+                {
+                    n=0;
+                    if(lineEdit->validator()->validate(s2,n)!=QValidator::Acceptable)
+                    {
+                        lineEdit->setText(s1);
+                    }
+                }
+            }
+        }
+    }
+    else if(plainTextEdit->isVisible()) {
+        if(keyboardStack->currentIndex()==1) {
+            QString spell;
+            QStringList ss;
+            spell=spellLabel->text();
+            if(keyboardStatus==Lowered) {
+                spell.append(keyboardPages[page][line][index].text);
+            }
+            else if(keyboardStatus==Shifted){
+                spell.append(keyboardPages[page][line][index].shiftedText);
+            }
+            if(spell==spellLabel->text()) {
+                return;
+            }
+            spellLabel->setText(spell);
+//            for(int i=0;i<spell.size();i++) {
+//                if(spell[i]==0x0a || spell[i]==0x0d) {
+//                    ke=new QKeyEvent(QEvent::KeyPress,0,Qt::NoModifier,spell.mid(0,i+1));
+//                    QApplication::postEvent(plainTextEdit,ke);
+//                    ke=new QKeyEvent(QEvent::KeyRelease,0,Qt::NoModifier,spell.mid(0,i+1));
+//                    QApplication::postEvent(plainTextEdit,ke);
+//                    clearWordArea();
+//                    spellLabel->clear();
+//                    return;
+//                }
+//            }
+            bool spellLegal=true;
+            for(int i=0;i<spell.size();i++) {
+                if(!spell[i].isLower()) {
+                    spellLegal=false;
+                    break;
+                }
+            }
+            if(spellLegal) {
+                ss=pin(spell);
+                updateWordArea(ss);
+            }
+            else {
+                clearWordArea();
+            }
+        }
+        else if(keyboardStack->currentIndex()==0) {
+            if(keyboardStatus==Lowered)
+            {
+                ke=new QKeyEvent(QEvent::KeyPress,0,Qt::NoModifier,keyboardPages[page][line][index].text);
+                QApplication::postEvent(plainTextEdit,ke);
+                ke=new QKeyEvent(QEvent::KeyRelease,0,Qt::NoModifier,keyboardPages[page][line][index].text);
+                QApplication::postEvent(plainTextEdit,ke);
+            }
+            else if(keyboardStatus==Shifted)
+            {
+                ke=new QKeyEvent(QEvent::KeyPress,0,Qt::NoModifier,keyboardPages[page][line][index].shiftedText);
+                QApplication::postEvent(plainTextEdit,ke);
+                ke=new QKeyEvent(QEvent::KeyRelease,0,Qt::NoModifier,keyboardPages[page][line][index].shiftedText);
+                QApplication::postEvent(plainTextEdit,ke);
+            }
+        }
+    }
+}
+
+void FullKeyboard::onKeyPressed(int page, int line, int index)
 {
     int n=0;
     QString s;
@@ -191,11 +350,61 @@ void FullKeyboard::onKeyReleased(int page, int line, int index)
         keyboardStatus=(keyboardStatus+1)%2;
         updateKeyboard(page,keyboardStatus);
     }
+    else if(line==2 && index==12) //Enter
+    {
+        QKeyEvent *ke=nullptr;
+        if(page==0) {
+            if(lineEdit->isVisible()) {
+                ke=new QKeyEvent(QEvent::KeyPress,Qt::Key_Return,Qt::NoModifier,"\r");
+                QApplication::postEvent(lineEdit,ke);
+                ke=new QKeyEvent(QEvent::KeyRelease,Qt::Key_Return,Qt::NoModifier,"\r");
+                QApplication::postEvent(lineEdit,ke);
+            }
+            else if(plainTextEdit->isVisible()) {
+                ke=new QKeyEvent(QEvent::KeyPress,Qt::Key_Return,Qt::NoModifier,"\r");
+                QApplication::postEvent(plainTextEdit,ke);
+                ke=new QKeyEvent(QEvent::KeyRelease,Qt::Key_Return,Qt::NoModifier,"\r");
+                QApplication::postEvent(plainTextEdit,ke);
+            }
+        }
+        else if(page==1) {
+            if(spellLabel->text().isEmpty()) {
+                if(lineEdit->isVisible()) {
+                    ke=new QKeyEvent(QEvent::KeyPress,Qt::Key_Return,Qt::NoModifier,"\r");
+                    QApplication::postEvent(lineEdit,ke);
+                    ke=new QKeyEvent(QEvent::KeyRelease,Qt::Key_Return,Qt::NoModifier,"\r");
+                    QApplication::postEvent(lineEdit,ke);
+                }
+                else if(plainTextEdit->isVisible()) {
+                    ke=new QKeyEvent(QEvent::KeyPress,Qt::Key_Return,Qt::NoModifier,"\r");
+                    QApplication::postEvent(plainTextEdit,ke);
+                    ke=new QKeyEvent(QEvent::KeyRelease,Qt::Key_Return,Qt::NoModifier,"\r");
+                    QApplication::postEvent(plainTextEdit,ke);
+                }
+            }
+            else {
+                if(lineEdit->isVisible()) {
+                    ke=new QKeyEvent(QEvent::KeyPress,0,Qt::NoModifier,spellLabel->text());
+                    QApplication::postEvent(lineEdit,ke);
+                    ke=new QKeyEvent(QEvent::KeyRelease,0,Qt::NoModifier,spellLabel->text());
+                    QApplication::postEvent(lineEdit,ke);
+                }
+                else if(plainTextEdit->isVisible()) {
+                    ke=new QKeyEvent(QEvent::KeyPress,0,Qt::NoModifier,spellLabel->text());
+                    QApplication::postEvent(plainTextEdit,ke);
+                    ke=new QKeyEvent(QEvent::KeyRelease,0,Qt::NoModifier,spellLabel->text());
+                    QApplication::postEvent(plainTextEdit,ke);
+                }
+                clearWordArea();
+                spellLabel->clear();
+            }
+        }
+    }
     else if(line==3 && index==11) //EN/ZH
     {
         if(page==0)
         {
-            if(langFLags[1]) {
+            if(langFlags[1]) {
                 keyboardStack->setCurrentIndex(1);
             }
         }
@@ -330,165 +539,6 @@ void FullKeyboard::attach(QWidget *w)
     }
 }
 
-void FullKeyboard::insertKeyValue(int page, int line, int index)
-{
-    int n=0;
-    QString s1,s2;
-    QKeyEvent *ke=nullptr;
-    if(lineEdit->isVisible()) {
-        if(keyboardStack->currentIndex()==1) {
-            QString spell;
-            QStringList ss;
-            spell=spellLabel->text();
-            if(keyboardStatus==Lowered) {
-                spell.append(keyboardPages[page][line][index].text);
-            }
-            else if(keyboardStatus==Shifted){
-                spell.append(keyboardPages[page][line][index].shiftedText);
-            }
-            if(spell==spellLabel->text()) {
-                return;
-            }
-            spellLabel->setText(spell);
-            for(int i=0;i<spell.size();i++) {
-                if(spell[i]==0x0a || spell[i]==0x0d) {
-                    s1=lineEdit->text();
-                    ke=new QKeyEvent(QEvent::KeyPress,0,Qt::NoModifier,spell.mid(0,i));
-                    QApplication::sendEvent(lineEdit,ke);
-                    delete ke;
-                    ke=new QKeyEvent(QEvent::KeyRelease,0,Qt::NoModifier,spell.mid(0,i));
-                    QApplication::sendEvent(lineEdit,ke);
-                    delete ke;
-                    s2=lineEdit->text();
-                    if(lineEdit->validator())
-                    {
-                        n=0;
-                        if(lineEdit->validator()->validate(s2,n)!=QValidator::Acceptable)
-                        {
-                            lineEdit->setText(s1);
-                        }
-                    }
-                    clearWordArea();
-                    spellLabel->clear();
-                    return;
-                }
-            }
-            bool spellLegal=true;
-            for(int i=0;i<spell.size();i++) {
-                if(!spell[i].isLower()) {
-                    spellLegal=false;
-                    break;
-                }
-            }
-            if(spellLegal) {
-                ss=pin(spell);
-                updateWordArea(ss);
-            }
-            else {
-                clearWordArea();
-            }
-        }
-        else {
-            if(keyboardStatus==Lowered)
-            {
-                s1=lineEdit->text();
-                ke=new QKeyEvent(QEvent::KeyPress,0,Qt::NoModifier,keyboardPages[page][line][index].text);
-                QApplication::sendEvent(lineEdit,ke);
-                delete ke;
-                ke=new QKeyEvent(QEvent::KeyRelease,0,Qt::NoModifier,keyboardPages[page][line][index].text);
-                QApplication::sendEvent(lineEdit,ke);
-                delete ke;
-                s2=lineEdit->text();
-                if(lineEdit->validator())
-                {
-                    n=0;
-                    if(lineEdit->validator()->validate(s2,n)!=QValidator::Acceptable)
-                    {
-                        lineEdit->setText(s1);
-                    }
-                }
-            }
-            else if(keyboardStatus==Shifted)
-            {
-                s1=lineEdit->text();
-                ke=new QKeyEvent(QEvent::KeyPress,0,Qt::NoModifier,keyboardPages[page][line][index].shiftedText);
-                QApplication::sendEvent(lineEdit,ke);
-                delete ke;
-                ke=new QKeyEvent(QEvent::KeyRelease,0,Qt::NoModifier,keyboardPages[page][line][index].shiftedText);
-                QApplication::sendEvent(lineEdit,ke);
-                delete ke;
-                s2=lineEdit->text();
-                if(lineEdit->validator())
-                {
-                    n=0;
-                    if(lineEdit->validator()->validate(s2,n)!=QValidator::Acceptable)
-                    {
-                        lineEdit->setText(s1);
-                    }
-                }
-            }
-        }
-    }
-    else if(plainTextEdit->isVisible()) {
-        if(keyboardStack->currentIndex()==1) {
-            QString spell;
-            QStringList ss;
-            spell=spellLabel->text();
-            if(keyboardStatus==Lowered) {
-                spell.append(keyboardPages[page][line][index].text);
-            }
-            else if(keyboardStatus==Shifted){
-                spell.append(keyboardPages[page][line][index].shiftedText);
-            }
-            if(spell==spellLabel->text()) {
-                return;
-            }
-            spellLabel->setText(spell);
-            for(int i=0;i<spell.size();i++) {
-                if(spell[i]==0x0a || spell[i]==0x0d) {
-                    ke=new QKeyEvent(QEvent::KeyPress,0,Qt::NoModifier,spell.mid(0,i+1));
-                    QApplication::postEvent(plainTextEdit,ke);
-                    ke=new QKeyEvent(QEvent::KeyRelease,0,Qt::NoModifier,spell.mid(0,i+1));
-                    QApplication::postEvent(plainTextEdit,ke);
-                    clearWordArea();
-                    spellLabel->clear();
-                    return;
-                }
-            }
-            bool spellLegal=true;
-            for(int i=0;i<spell.size();i++) {
-                if(!spell[i].isLower()) {
-                    spellLegal=false;
-                    break;
-                }
-            }
-            if(spellLegal) {
-                ss=pin(spell);
-                updateWordArea(ss);
-            }
-            else {
-                clearWordArea();
-            }
-        }
-        else {
-            if(keyboardStatus==Lowered)
-            {
-                ke=new QKeyEvent(QEvent::KeyPress,0,Qt::NoModifier,keyboardPages[page][line][index].text);
-                QApplication::postEvent(plainTextEdit,ke);
-                ke=new QKeyEvent(QEvent::KeyRelease,0,Qt::NoModifier,keyboardPages[page][line][index].text);
-                QApplication::postEvent(plainTextEdit,ke);
-            }
-            else if(keyboardStatus==Shifted)
-            {
-                ke=new QKeyEvent(QEvent::KeyPress,0,Qt::NoModifier,keyboardPages[page][line][index].shiftedText);
-                QApplication::postEvent(plainTextEdit,ke);
-                ke=new QKeyEvent(QEvent::KeyRelease,0,Qt::NoModifier,keyboardPages[page][line][index].shiftedText);
-                QApplication::postEvent(plainTextEdit,ke);
-            }
-        }
-    }
-}
-
 void FullKeyboard::initKeyboardPages()
 {
     QList<QList<QList<KeyButtonInfo> > > keyboardPages = {
@@ -543,7 +593,7 @@ void FullKeyboard::initKeyboardPages()
                 {          "l",      "l",          "L",      "L"},
                 {          ";",      ";",          ":",      ":"},
                 {         "\'",     "\'",         "\"",     "\""},
-                {      "Enter",     "\r",      "Enter",     "\r"},
+                {      "Enter",       "",      "Enter",       ""},
             },
             //line 3
             {
@@ -613,7 +663,7 @@ void FullKeyboard::initKeyboardPages()
                 {          "l",      "l",          "L",      "L"},
                 {          ";",      ";",          ":",      ":"},
                 {         "\'",     "\'",         "\"",     "\""},
-                {      "Enter",     "\r",      "Enter",     "\r"},
+                {      "Enter",       "",      "Enter",       ""},
             },
             //line 3
             {
@@ -646,6 +696,7 @@ void FullKeyboard::setWordBarVisible(bool f)
 
 QStringList FullKeyboard::pin(QString pinyin)
 {
+    QList<int> ids;
     QStringList ss;
     QString s;
     if(pinyin.isEmpty()) {
@@ -663,9 +714,12 @@ QStringList FullKeyboard::pin(QString pinyin)
         }
     }
     QSqlQuery query(chineseDb);
-    query.exec(QString("select karacter from character_frequency where pinyin=\'%1\';").arg(pinyin));
+    query.exec(QString("select serial_number, karacter from character_frequency where pinyin=\'%1\';").arg(pinyin));
     while(query.next()) {
-        ss.append(query.value(0).toString());
+        if(!ids.contains(query.value(0).toInt())) {
+            ids.append(query.value(0).toInt());
+            ss.append(query.value(1).toString());
+        }
     }
     return ss;
 }
@@ -725,18 +779,18 @@ void FullKeyboard::updateWordArea(QStringList words)
 void FullKeyboard::setLanguageEnabled(int page,bool f)
 {
     if(f) {
-        langFLags[page]=1;
+        langFlags[page]=1;
     }
     else {
-        langFLags[page]=0;
+        langFlags[page]=0;
     }
 }
 
 void FullKeyboard::showEvent(QShowEvent *event)
 {
-    Q_UNUSED(event);
     int sx,sy;
     QRect rc;
+    Q_UNUSED(event);
     if(parentWidget()) {
         rc=parentWidget()->geometry();
     }

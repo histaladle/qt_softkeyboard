@@ -4,6 +4,7 @@
 #include <QMainWindow>
 #include "FullKeyboard.h"
 #include "HanCharacter.h"
+#include "NumberKeyboard.h"
 namespace Ui {
 class MainWindow;
 }
@@ -13,9 +14,10 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 
 public:
-    explicit MainWindow(QWidget *parent = 0);
+    explicit MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
     FullKeyboard *fullKeyboard;
+    NumberKeyboard *numKeyboard;
 protected:
     bool eventFilter(QObject *watched, QEvent *event);
 private:
